@@ -1,10 +1,9 @@
-from fastapi.exceptions import HTTPException
-
-from app import oauth2
-from .. import schemas, utils, models, database
 from fastapi import APIRouter, status
+from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm.session import Session
+
+from .. import database, models, oauth2, schemas, utils
 
 router = APIRouter(
     prefix="/users",
@@ -32,5 +31,9 @@ def get_user(id: int, db: Session = Depends(database.get_db), curr_user: models.
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"User with ID: {id} does not exist")
+
+    if user.id != curr_user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                            detail="NotF authorized to perform requested action")
 
     return user
