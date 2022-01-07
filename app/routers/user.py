@@ -17,7 +17,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
         models.User.email == user.email).first()
     if existing_user:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                             detail=f"User with the same email already exists")
+                            detail=f"User with the same email already exists")
 
     hashed_password = utils.hash(user.password)
     user.password = hashed_password
@@ -30,16 +30,6 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(database.get_db)
     return new_user
 
 
-@router.get("/{id}", response_model=schemas.UserResponse)
-def get_user(id: int, db: Session = Depends(database.get_db), curr_user: models.User = Depends(oauth2.get_current_user)):
-    user = db.query(models.User).filter(models.User.id == id).first()
-
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User with ID: {id} does not exist")
-
-    if user.id != curr_user.id:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail="NotF authorized to perform requested action")
-
-    return user
+@router.get('/', response_model=schemas.UserResponse)
+def get_current_user(db: Session = Depends(database.get_db), curr_user: models.User = Depends(oauth2.get_current_user)):
+    return curr_user
