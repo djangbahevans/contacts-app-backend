@@ -29,12 +29,24 @@ You can checkout supported endpoints [here](https://tranquil-river-56095.herokua
 
 * Clone the project
 
-```python
+```bash
 git clone https://github.com/djangbahevans/contacts-app-backend.git
 cd contacts-app-backend
 ```
 
-* Set up .env file
+* Create virtual environment and install dependencies
+
+```bash
+python -m venv venv
+
+source venv/bin/activate # MacOS/Linux bash
+venv/Scripts/Activate.ps1 # Powershell
+venv/Scripts/activate.bat # Command prompt
+
+pip3 install -r requirements.txt
+```
+
+* Set up .env file and populate these fields
 
 ```env
 DATABASE_HOSTNAME=database_hostname_name
