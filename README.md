@@ -11,7 +11,8 @@ A simple CRUD contacts API using FastAPI
 ### Demonstration
 
 This project is hosted on Heroku. You can run a demonstration [here](https://tranquil-river-56095.herokuapp.com).  
-You can checkout supported endpoints [here](https://tranquil-river-56095.herokuapp.com/docs)
+You can checkout supported endpoints [here](https://tranquil-river-56095.herokuapp.com/docs).  
+A demo of the frontend of this application is available at <https://evans-contacts-app.herokuapp.com>
 
 ### Dependencies
 
