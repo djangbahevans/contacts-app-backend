@@ -1,4 +1,4 @@
-# Project Title
+# Contacts App API
 
 Simple Contacts API using FastAPI
 
