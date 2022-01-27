@@ -9,6 +9,8 @@ from alembic import op
 import sqlalchemy as sa
 import sqlalchemy_utils as sa_u
 
+from app.models import GenderEnum
+
 # revision identifiers, used by Alembic.
 revision = '2c82f7bb1ba2'
 down_revision = '1cb6190d82d2'
@@ -26,8 +28,7 @@ def upgrade():
                     sa.Column("name_prefix", sa.String, nullable=True),
                     sa.Column("name_suffix", sa.String, nullable=True),
                     sa.Column("birthday", sa.Date, nullable=True),
-                    sa.Column("gender", sa.Enum("male", "female",
-                              name="gender_enum"), nullable=True),
+                    sa.Column("gender", GenderEnum, nullable=True),
                     sa.Column("location", sa.String, nullable=True),
                     sa.Column("occupation", sa.String, nullable=True),
                     sa.Column("notes", sa.String, nullable=True),
@@ -44,5 +45,4 @@ def upgrade():
 
 def downgrade():
     op.drop_table("contacts")
-    gender_enum = sa.Enum("male", "female", name="gender_enum")
-    gender_enum.drop(op.get_bind())
+    GenderEnum.drop(op.get_bind())

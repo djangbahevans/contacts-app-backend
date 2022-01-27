@@ -5,6 +5,8 @@ from sqlalchemy_utils import EmailType, PhoneNumberType, URLType
 
 from .database import Base
 
+GenderEnum = Enum("male", "female", name="gender_enum")
+
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -16,8 +18,7 @@ class Contact(Base):
     name_prefix = Column("name_prefix", String, nullable=True)
     name_suffix = Column("name_suffix", String, nullable=True)
     birthday = Column("birthday", Date, nullable=True)
-    gender = Column("gender", Enum("male", "female",
-                    name="gender_enum"), nullable=True)
+    gender = Column("gender", GenderEnum, nullable=True)
     location = Column("location", String, nullable=True)
     occupation = Column("occupation", String, nullable=True)
     notes = Column("notes", String, nullable=True)
