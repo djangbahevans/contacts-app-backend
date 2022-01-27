@@ -9,7 +9,7 @@ from .routers import auth, contact, user
 logging.basicConfig(filename="app.log")
 logging.getLogger("sqlalchemy.engine").setLevel(logging.INFO)
 
-models.Base.metadata.create_all(bind=database.engine)
+# models.Base.metadata.create_all(bind=database.engine)
 
 
 app = FastAPI()
