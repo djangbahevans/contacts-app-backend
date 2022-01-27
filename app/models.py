@@ -44,3 +44,16 @@ class User(Base):
     password = Column("password", String, nullable=False)
     created_at = Column("created_at", TIMESTAMP(
         timezone=True), nullable=False, server_default=text("now()"))
+
+
+class Token(Base):
+    __tablename__ = "tokens"
+
+    id = Column("id", Integer, primary_key=True, nullable=False)
+    user_id = Column("user_id", Integer, ForeignKey(
+        "users.id", ondelete="CASCADE"), nullable=False)
+    token = Column("token", String, nullable=False, unique=True)
+    created_at = Column("created_at", TIMESTAMP(
+        timezone=True), nullable=False, server_default=text("now()"))
+
+    owner = relationship("User")
