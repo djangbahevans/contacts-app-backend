@@ -40,6 +40,8 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column("id", Integer, primary_key=True, nullable=False)
+    firstname = Column("firstname", String, nullable=False)
+    lastname = Column("lastname", String, nullable=False)
     email = Column("email", EmailType, nullable=False, unique=True)
     password = Column("password", String, nullable=False)
     created_at = Column("created_at", TIMESTAMP(

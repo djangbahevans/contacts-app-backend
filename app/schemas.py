@@ -11,6 +11,8 @@ class GenderEnum(str, Enum):
 
 
 class UserCreate(BaseModel):
+    firstname: str
+    lastname: str
     email: EmailStr
     password: str
 
@@ -25,6 +27,8 @@ class UserLogin(BaseModel):
 
 class UserResponse(BaseModel):
     id: int
+    firstname: str
+    lastname: str
     email: EmailStr
     created_at: datetime
 
