@@ -32,7 +32,7 @@ def login(user_credentials: OAuth2PasswordRequestForm = Depends(), db: Session =
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/password-reset")
+@router.post("/forgot-password", status_code=status.HTTP_202_ACCEPTED)
 def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depends(database.get_db), user_agent: Optional[str] = Header(None)):
     # Check if email exists
     user = db.query(models.User).filter(
@@ -51,10 +51,10 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
             "support_url": "tel:+233501360696",
             "company_name": "Evans and Sons",
         }
-        
+
         bt.add_task(utils.send_email, recipient=email.email,
                     subject="Reset your Contacts App password", template='password_reset_help.html', payload=payload)
-        return {"data": "A password reset link has been sent to your email"}
+        return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password.\n\nIf you do not receive the password reset message within a few moments, please check your spam folder or other filtering tools."}
 
     # check if user has token and delete it if user has
     db.query(models.Token).filter(models.Token.user_id ==
@@ -75,11 +75,11 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
         "operating_system": ua.get_os(),
         "browser_name": ua.get_browser(),
         "email_address": email.email,
-        "action_url": f"{settings.frontend_domain}/reset-password?token={reset_token}",
+        "action_url": f"{settings.frontend_domain}/reset-password?token={reset_token}&user_id={user.id}",
         "support_url": "tel:+233501360696",
         "company_name": "Evans and Sons",
     }
     bt.add_task(utils.send_email, recipient=email.email,
                 subject="Reset your Contacts App password", template='password_reset.html', payload=payload)
 
-    return {"data": "A password reset link has been sent to your email"}
+    return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password.\n\nIf you do not receive the password reset message within a few moments, please check your spam folder or other filtering tools."}
