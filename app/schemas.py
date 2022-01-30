@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, HttpUrl
 
 
 class GenderEnum(str, Enum):
@@ -15,6 +15,16 @@ class UserCreate(BaseModel):
     lastname: str
     email: EmailStr
     password: str
+
+    class Config:
+        orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    firstname: Optional[str]
+    lastname: Optional[str]
+    email: Optional[EmailStr]
+    password: Optional[str]
 
     class Config:
         orm_mode = True
@@ -47,12 +57,12 @@ class ContactBase(BaseModel):
     location: Optional[str] = None
     occupation: Optional[str] = None
     notes: Optional[str] = None
-    photo: Optional[str] = None
-    email: Optional[str] = None
+    photo: Optional[HttpUrl] = None
+    email: Optional[EmailStr] = None
     phone1: Optional[str] = None
     phone2: Optional[str] = None
     organization: Optional[str] = None
-    website: Optional[str] = None
+    website: Optional[HttpUrl] = None
 
 
 class ContactCreate(ContactBase):
@@ -79,3 +89,7 @@ class TokenData(BaseModel):
 
 class Email(BaseModel):
     email: EmailStr
+
+class PasswordUpdate(BaseModel):
+    password: str
+    token: str
