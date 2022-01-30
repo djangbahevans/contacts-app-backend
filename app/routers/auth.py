@@ -37,7 +37,7 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
     # Check if email exists
     user = db.query(models.User).filter(
         models.User.email == email.email).first()
-    print("USER_AGENT", user_agent)
+    
     ua = parse(user_agent_string=user_agent)
 
     if not user:
@@ -63,12 +63,13 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
     # Create new token
     reset_token = secrets.token_hex(32)
     hash = utils.hash(reset_token)
+    print(reset_token)
 
     token = models.Token(token=hash, user_id=user.id)
     db.add(token)
     db.commit()
     db.refresh(token)
-
+    print(token.token)
     payload = {
         "name": user.email,
         "product_name": "Contacts App",
