@@ -34,10 +34,10 @@ def upgrade():
                     sa.Column("notes", sa.String, nullable=True),
                     sa.Column("photo", sa.String, nullable=True),
                     sa.Column("email", sa_u.EmailType, nullable=True),
-                    sa.Column("phone1", sa_u.PhoneNumberType(), nullable=True),
-                    sa.Column("phone2", sa_u.PhoneNumberType(), nullable=True),
+                    sa.Column("phone1", sa.String(20), nullable=True),
+                    sa.Column("phone2", sa.String(20), nullable=True),
                     sa.Column("organization", sa.String, nullable=True),
-                    sa.Column("website", sa_u.URLType, nullable=True),
+                    sa.Column("website", sa.Text, nullable=True),
                     sa.Column("created_at", sa.TIMESTAMP(timezone=True),
                               nullable=False, server_default=sa.text("now()")),
                     sa.Column("user_id", sa.Integer, sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False))

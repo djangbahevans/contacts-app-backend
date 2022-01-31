@@ -90,6 +90,7 @@ class TokenData(BaseModel):
 class Email(BaseModel):
     email: EmailStr
 
+
 class PasswordUpdate(BaseModel):
     password: SecretStr
     token: str
