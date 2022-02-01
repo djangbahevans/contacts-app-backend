@@ -1,7 +1,7 @@
 from sqlalchemy import (TIMESTAMP, Column, Date, Enum, ForeignKey, Integer,
-                        String, text)
+                        String, Text, text)
 from sqlalchemy.orm import relationship
-from sqlalchemy_utils import EmailType, URLType
+from sqlalchemy_utils import EmailType
 
 from .database import Base
 
@@ -22,12 +22,12 @@ class Contact(Base):
     location = Column("location", String, nullable=True)
     occupation = Column("occupation", String, nullable=True)
     notes = Column("notes", String, nullable=True)
-    photo = Column("photo", URLType, nullable=True)
+    photo = Column("photo", Text, nullable=True)
     email = Column("email", EmailType, nullable=True)
     phone1 = Column("phone1", String(20), nullable=True)
     phone2 = Column("phone2", String(20), nullable=True)
     organization = Column("organization", String, nullable=True)
-    website = Column("website", URLType, nullable=True)
+    website = Column("website", Text, nullable=True)
     created_at = Column("created_at", TIMESTAMP(
         timezone=True), nullable=False, server_default=text("now()"))
     user_id = Column("user_id", Integer, ForeignKey(
