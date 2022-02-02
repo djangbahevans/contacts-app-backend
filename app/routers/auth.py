@@ -54,7 +54,7 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
 
         bt.add_task(utils.send_email, recipient=email.email,
                     subject="Reset your Contacts App password", template='password_reset_help.html', payload=payload)
-        return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password.\n\nIf you do not receive the password reset message within a few moments, please check your spam folder or other filtering tools."}
+        return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password."}
 
     # check if user has token and delete it if user has
     db.query(models.Token).filter(models.Token.user_id ==
@@ -83,4 +83,4 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
     bt.add_task(utils.send_email, recipient=email.email,
                 subject="Reset your Contacts App password", template='password_reset.html', payload=payload)
 
-    return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password.\n\nIf you do not receive the password reset message within a few moments, please check your spam folder or other filtering tools."}
+    return {"data": "A password reset message was sent to your email address. Please click the link in that message to reset your password."}
