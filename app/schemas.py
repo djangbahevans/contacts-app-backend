@@ -2,7 +2,7 @@ from datetime import date, datetime
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, EmailStr, HttpUrl, SecretStr
+from pydantic import BaseModel, EmailStr, HttpUrl, SecretStr, validator
 
 
 class GenderEnum(str, Enum):
@@ -63,6 +63,17 @@ class ContactBase(BaseModel):
     phone2: Optional[str] = None
     organization: Optional[str] = None
     website: Optional[HttpUrl] = None
+    
+    @validator("*", pre=True)
+    def blank_string(cls, v):
+        if v == "":
+            return None
+        return v
+    
+    @validator("gender", pre=True)
+    def gender_lower(cls, v: str):
+        if type(v) != str: return v
+        return v.lower()
 
 
 class ContactCreate(ContactBase):
