@@ -7,6 +7,8 @@ from .database import Base
 
 GenderEnum = Enum("male", "female", name="gender_enum")
 
+# StatusEnum = Enum("active", "pending", name="status_enum")
+
 
 class Contact(Base):
     __tablename__ = "contacts"
@@ -24,8 +26,8 @@ class Contact(Base):
     notes = Column("notes", String, nullable=True)
     photo = Column("photo", Text, nullable=True)
     email = Column("email", EmailType, nullable=True)
-    phone1 = Column("phone1", String(20), nullable=True)
-    phone2 = Column("phone2", String(20), nullable=True)
+    phone1 = Column("phone1", String, nullable=True)
+    phone2 = Column("phone2", String, nullable=True)
     organization = Column("organization", String, nullable=True)
     website = Column("website", Text, nullable=True)
     created_at = Column("created_at", TIMESTAMP(
@@ -44,6 +46,7 @@ class User(Base):
     lastname = Column("lastname", String, nullable=False)
     email = Column("email", EmailType, nullable=False, unique=True)
     password = Column("password", String, nullable=False)
+    # status = Column("status", StatusEnum, nullable=False)
     created_at = Column("created_at", TIMESTAMP(
         timezone=True), nullable=False, server_default=text("now()"))
 
