@@ -3,7 +3,6 @@ import logging
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from . import database, models
 from .routers import auth, contact, user
 
 logging.basicConfig(filename="app.log")
@@ -17,7 +16,8 @@ app.add_middleware(CORSMiddleware,
                    allow_origins=['*'],
                    allow_credentials=True,
                    allow_methods=['*'],
-                   allow_headers=['*'])
+                   allow_headers=['*'],
+                   expose_headers=['*'])
 
 app.include_router(auth.router)
 app.include_router(contact.router)
