@@ -2,7 +2,7 @@ import csv
 from io import StringIO
 from typing import List
 
-from fastapi import APIRouter, File, Response, status
+from fastapi import APIRouter, BackgroundTasks, File, Response, status
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
 from sqlalchemy.orm.session import Session
@@ -26,25 +26,28 @@ def create_contact(contact: schemas.ContactCreate, db: Session = Depends(databas
 
     return new_contact
 
-@router.post("/from-file", response_model=List[schemas.ContactResponse])
-def create_from_file(file: bytes = File(...), db: Session = Depends(database.get_db), curr_user: models.User = Depends(oauth2.get_current_user)):
-    csv_string = file.decode('utf-8')
-    buffer = StringIO(csv_string)
-    csv_reader = csv.DictReader(buffer)
-    
-    pydantic_models: List[schemas.ContactCreate] = []
-    for row in csv_reader:
-        pydantic_models.append(schemas.ContactCreate(**row))
+
+@router.post("/from-file")
+def create_from_file(bt: BackgroundTasks, file: bytes = File(...), db: Session = Depends(database.get_db), curr_user: models.User = Depends(oauth2.get_current_user)):
+    def add_data_to_server():
+        csv_string = file.decode('utf-8')
+        buffer = StringIO(csv_string)
+        csv_reader = csv.DictReader(buffer)
+
+        pydantic_models: List[schemas.ContactCreate] = []
+        for row in csv_reader:
+            pydantic_models.append(schemas.ContactCreate(**row))
+
+        sql_models: List[models.Contact] = []
+        for model in pydantic_models:
+            sql_models.append(models.Contact(**model.dict(), user_id=curr_user.id))
+
+        db.add_all(sql_models)
+        db.commit()
         
-    sql_models: List[models.Contact] = []
-    for model in pydantic_models:
-        sql_models.append(models.Contact(**model.dict(), user_id=curr_user.id))
-        
-    db.add_all(sql_models)
-    db.commit()
-    db.refresh(sql_models)
-    
-    return pydantic_models
+    bt.add_task(add_data_to_server)
+
+    return Response(status_code=status.HTTP_202_ACCEPTED)
 
 
 @router.get('/', response_model=List[schemas.ContactResponse])
@@ -69,7 +72,7 @@ def get_contacts(response: Response, db: Session = Depends(database.get_db), cur
             models.Contact.user_id == curr_user.id
         )
     ).limit(per_page).offset(per_page*page).all()
-    
+
     count = db.query(models.Contact).count()
     response.headers["x-total-count"] = f"{count}"
 
