@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     mail_from_name: str
     
     frontend_domain: str
+    
+    redis_url: str
+    redis_tls_url: str
 
     class Config:
         env_file = '.env'

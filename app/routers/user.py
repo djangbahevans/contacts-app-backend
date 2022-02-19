@@ -1,7 +1,10 @@
-from fastapi import APIRouter, Body, status
+from fastapi import APIRouter, status
 from fastapi.exceptions import HTTPException
 from fastapi.params import Depends
+from redis import Redis
 from sqlalchemy.orm.session import Session
+
+from app.constants import FORGOT_PASSWORD_PREFIX, USER_PREFIX
 
 from .. import database, models, oauth2, schemas, utils
 
@@ -36,28 +39,27 @@ def get_current_user(db: Session = Depends(database.get_db), curr_user: models.U
 
 
 @router.put("/{id}/reset-password")
-def update_user_password(id: int, body: schemas.PasswordUpdate, db: Session = Depends(database.get_db)):
+def update_user_password(id: int, body: schemas.PasswordUpdate, db: Session = Depends(database.get_db), redis: Redis = Depends(database.get_cache)):
     token = body.token
     password = body.password
-    token_user = db.query(models.Token, models.User).filter(models.User.id == id).join(
-        models.User, models.Token.user_id == models.User.id, isouter=True).first()
 
-    if not token_user:  # Token doesn't exist
+    hash = redis.get(f"{USER_PREFIX}:{FORGOT_PASSWORD_PREFIX}:{id}")
+    if not hash:  # Token doesn't exist
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
-    if not utils.verify(token, token_user["Token"].token):  # Token is invalid
+    if not utils.verify(token, hash):  # Token is invalid
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
 
     # Token exists for the selected user that means we can update password
-    hashed_password = utils.hash(password)
+    hashed_password = utils.hash(password.get_secret_value())
 
     db.query(models.User).filter(models.User.id == id).update(
         {"password": hashed_password}, synchronize_session=False)
+
     # delete token
-    db.query(models.Token).filter(models.Token.user_id ==
-                                  id).delete(synchronize_session=False)
+    redis.delete(f"{USER_PREFIX}:{FORGOT_PASSWORD_PREFIX}:{id}")
     db.commit()
 
     return {"data": "Password updated successfully"}
