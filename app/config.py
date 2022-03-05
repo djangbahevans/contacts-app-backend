@@ -11,6 +11,8 @@ class Settings(BaseSettings):
     algorithm: str
     access_token_expire_minutes: int
     
+    mail_from: str
+    
     frontend_domain: str
     
     redis_url: str
