@@ -55,7 +55,7 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
             "company_name": "Evans and Sons",
         }
 
-        bt.add_task(utils.send_email, recipient=email.email,
+        bt.add_task(utils.send_email, recipients=[email.email],
                     subject="Reset your Contacts App password", template='password_reset_help.html', payload=payload)
         return {"data": msg}
 
@@ -78,7 +78,7 @@ def reset_password(email: schemas.Email, bt: BackgroundTasks, db: Session = Depe
         "support_url": "tel:+233501360696",
         "company_name": "Evans and Sons",
     }
-    bt.add_task(utils.send_email, recipient=email.email,
+    bt.add_task(utils.send_email, recipients=[email.email],
                 subject="Reset your Contacts App password", template='password_reset.html', payload=payload)
 
     return {"data": msg}

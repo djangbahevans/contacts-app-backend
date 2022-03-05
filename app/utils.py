@@ -1,25 +1,17 @@
 from pathlib import Path
-from fastapi import Request
-from fastapi_mail import ConnectionConfig, FastMail, MessageSchema
+from typing import List
+
+from jinja2 import Template
 from passlib.context import CryptContext
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 
 from app.config import settings
 
 pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
+TEMPLATE_FOLDER = Path(__file__).parent / 'templates/email'
 
-__conf = ConnectionConfig(
-    MAIL_USERNAME=settings.mail_username,
-    MAIL_PASSWORD=settings.mail_password,
-    MAIL_FROM=settings.mail_from,
-    MAIL_PORT=settings.mail_port,
-    MAIL_SERVER=settings.mail_server,
-    MAIL_FROM_NAME=settings.mail_from_name,
-    MAIL_TLS=True,
-    MAIL_SSL=False,
-    USE_CREDENTIALS=True,
-    TEMPLATE_FOLDER=Path(__file__).parent / 'templates/email'
-)
 
 def hash(password: str):
     return pwd_context.hash(password)
@@ -29,12 +21,18 @@ def verify(plain: str, hash: str):
     return pwd_context.verify(plain, hash)
 
 
-async def send_email(recipient: str, subject: str, payload: str, template: str):
-    message = MessageSchema(
+async def send_email(recipients: List[str], subject: str, payload: str, template: str):
+    t = Template(
+        open(TEMPLATE_FOLDER / template, encoding="utf-8").read())
+
+    message = Mail(
+        from_email=settings.mail_from,
+        to_emails=recipients,
         subject=subject,
-        recipients=[recipient],
-        template_body=payload
+        html_content=t.render(**payload)
     )
-    
-    fm = FastMail(config=__conf)
-    await fm.send_message(message=message, template_name=template)
+    try:
+        sg = SendGridAPIClient(settings.sendgrid_api_key)
+        response = sg.send(message)
+    except Exception as e:
+        print(e.message)
