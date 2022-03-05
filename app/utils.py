@@ -34,5 +34,8 @@ async def send_email(recipients: List[str], subject: str, payload: str, template
     try:
         sg = SendGridAPIClient(settings.sendgrid_api_key)
         response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
     except Exception as e:
         print(e.message)
